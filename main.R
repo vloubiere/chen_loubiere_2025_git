@@ -52,9 +52,37 @@ file.edit("git_deepATAC/subscripts/clustering_motifs_designed_sequences.R")
 # Call seqlets from VISTA enhancers ----
 file.edit("git_deepATAC/subscripts/call_seqlets_heart_VISTA_enhancers.R")
 
+# Heatmap selected enhancers ----
+file.edit("git_deepATAC/subscripts/compare_ledidi_parameters.R")
+file.edit("git_deepATAC/subscripts/motifs_contribution_heart.R")
+file.edit("git_deepATAC/subscripts/best_ledidi_parameters.R")
+file.edit("git_deepATAC/subscripts/best_ledidi_parameters_heatmap.R")
+file.edit("git_deepATAC/subscripts/known_heart_motifs.R")
+file.edit("git_deepATAC/subscripts/all_known_motifs.R")
+
+# Final selection enhancers ! ----
+file.edit("git_deepATAC/subscripts/set_cutoffs_predicted_activity.R")
+file.edit("git_deepATAC/subscripts/compute_motif_counts_and_enrichments.R")
+file.edit("git_deepATAC/subscripts/compare_design_approaches.R")
+file.edit("git_deepATAC/subscripts/heatmap_motif_counts_per_kb.R")
+file.edit("git_deepATAC/subscripts/heatmap_compare_tissues.R")
+file.edit("git_deepATAC/subscripts/best_ledidi_parameters_contrib.R")
+
+# Final figures evegeny ----
+file.edit("git_deepATAC/subscripts/create_clean_list_sequences.R")
+file.edit("git_deepATAC/subscripts/set_cutoffs_predicted_activity_evgeny.R")
+file.edit("git_deepATAC/subscripts/annotate_PWMs.R")
+file.edit("git_deepATAC/subscripts/compute_motif_counts_and_enrichments.R")
+file.edit("git_deepATAC/subscripts/compare_design_approaches_evgeny.R")
+file.edit("git_deepATAC/subscripts/heatmap_motif_counts_per_kb_evgeny.R")
+file.edit("git_deepATAC/subscripts/heatmap_compare_tissues_evgeny.R")
+file.edit("git_deepATAC/subscripts/cluster_filtered_sequences_evgeny.R")
+file.edit("git_deepATAC/subscripts/contribution_tracks_selected_sequences_evgeny.R")
+
 
 
 # OLD ----------------------------------------------------------------------------------------------------------------#
+file.edit("git_deepATAC/subscripts/final_heatmap_selected_enhancers_old.R")
 # ATAC test sets
 file.edit("git_deepATAC/subscripts/TS_quantif_test_sets_ATAC_models.R") # tissueSpecific vs specificClosed
 file.edit("git_deepATAC/subscripts/smoothScatter_test_sets_ATAC_models.R") # Correlation obs vs. mean pred

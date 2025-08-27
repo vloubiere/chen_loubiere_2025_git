@@ -1,6 +1,5 @@
 setwd("/groups/stark/vloubiere/projects/DeepATAC_shenzhi/")
 source("git_deepATAC/function/augmentation_function_tiling_sliding_window.R")
-require(vlfunctions)
 
 # Import vista tiles ----
 vista <- readxl::read_excel("/groups/stark/shenzhi.chen/db/VISTA_enhancer_dataset/VISTA2024_AllTissuesReferenceAlleles.xlsx")
@@ -39,9 +38,12 @@ vista[, width:= NULL]
 
 # Order and save ----
 setcolorder(vista,
-            c("class", "genome", "peakID", "seqnames", "start", 'end'))
+            c("class", "peakID", "seqnames", "start", "end", "genome"))
 saveRDS(vista,
         "db/peaks/vista_tiles_clean.rds")
 
+# Compare to old ----
+identical(vista[, paste0(seqnames, ":", start, "-", end)],
+          readRDS("db/peaks/old/vista_tiles_clean.rds")$coor)
 
 

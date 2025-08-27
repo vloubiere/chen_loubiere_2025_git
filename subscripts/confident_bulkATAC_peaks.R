@@ -1,11 +1,11 @@
 setwd("/groups/stark/vloubiere/projects/DeepATAC_shenzhi/")
-require(vlfunctions)
-require(GenomicRanges)
-require(rtracklayer)
+devtools::load_all("/groups/stark/vloubiere/vlite/")
 
 # Import metadata ----
 meta <- readxl::read_xlsx("Rdata/metadata_ATACSeq.xlsx")
 meta <- as.data.table(meta)[dataset=="bulkENCODE"]
+"/groups/stark/shenzhi.chen/projects/transferLearningMammalianEnhancerDesign202408/db/narrowpeak/bulkATAC/forebrain/mm10-forebrain-e11.5-merged_peaks.narrowPeak"
+"/groups/stark/shenzhi.chen/projects/transferLearningMammalianEnhancerDesign202408/db/peaks/bulkATAC/forebrain/mm10-forebrain-e11.5-merged_peaks.narrowPeak"
 
 # Import peaks ----
 dat <- melt(meta, "tissue", patterns("peaks"))
