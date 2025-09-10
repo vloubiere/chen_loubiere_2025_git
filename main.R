@@ -78,8 +78,3 @@ file.edit("git_deepATAC/subscripts/heatmap_motif_counts_per_kb_evgeny.R")
 file.edit("git_deepATAC/subscripts/heatmap_compare_tissues_evgeny.R")
 file.edit("git_deepATAC/subscripts/cluster_filtered_sequences_evgeny.R")
 file.edit("git_deepATAC/subscripts/contribution_tracks_selected_sequences_evgeny.R")
-
-# PAPER FIRST VERSION ----
-file.edit("git_deepATAC/subscripts/clean_metadata_paper.R")
-file.edit("git_deepATAC/subscripts/PCC_paper.R")
-
