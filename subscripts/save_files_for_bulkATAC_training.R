@@ -126,10 +126,12 @@ meta[, {
 meta[, {
   if(any(!file.exists(unlist(.BY)[-c(1,2,3,4)])) | overwrite)
   {
+    
     # Select ATAC-seq peaks ID
     IDs <- folds[group=="ATAC", c("peakID", fold), with= F]
     setnames(IDs,
              c("peakID", "set"))
+    
     # Globally Open
     GO[IDs, set:= i.set, on= "peakID"]
     .GO <- merge(IDs,
@@ -177,6 +179,7 @@ meta[, {
              c(tissue, paste0(tissue, ".cov")),
              c("label", "score"))
     .GC[, ID:= paste0(ID, "__", ifelse(label==1, "open", "closed"))]
+    
     # Balancing
     .GC <- if(balancing=="1x")
     {

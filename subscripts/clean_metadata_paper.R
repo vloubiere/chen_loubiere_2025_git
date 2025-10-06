@@ -1,4 +1,4 @@
-#set workpath
+# Set workpath ----
 setwd("/groups/stark/shenzhi.chen/projects/transferLearningMammalianEnhancerDesign202408/clean_version/")
 library(Biostrings)
 devtools::load_all("/groups/stark/vloubiere/vlite/")
@@ -64,7 +64,7 @@ meta[, predActFromRandomIni_VISTA_random := {
 
 # Add activity prediction from mismatched tissue TL models (MTL) ----
 meta[tissue== "heart", predActFromMTL_VISTA_test := {
-  folder <- paste0("result/model/VISTA_model/", ID, "/", tissue, "/results_", fold, "_", tissue, "_DeepSTARR2_", replicate, "_transfer_hindbrain")
+  folder <- paste0("result/model/VISTA_model/", ID, "/", tissue, "/results_", fold, "_", tissue, "_DeepSTARR2_", replicate, "_transfer_neuralTube")
   file.path(folder, paste0(fold,"_sequences_test.fa_predictions_enhancer_Model.txt"))
 }]
 meta[tissue== "limb", predActFromMTL_VISTA_test := {
@@ -76,7 +76,7 @@ meta[tissue %notin% c("limb","heart"), predActFromMTL_VISTA_test := {
   file.path(folder, paste0(fold,"_sequences_test.fa_predictions_enhancer_Model.txt"))
 }]
 meta[tissue== "heart", predActFromMTL_VISTA_random := {
-  folder <- paste0("result/model/VISTA_model/", ID, "/", tissue, "/results_", fold, "_", tissue, "_DeepSTARR2_", replicate, "_transfer_hindbrain")
+  folder <- paste0("result/model/VISTA_model/", ID, "/", tissue, "/results_", fold, "_", tissue, "_DeepSTARR2_", replicate, "_transfer_neuralTube")
   file.path(folder, "random_sequences_600k.fasta_predictions_enhancer_Model.txt")
 }]
 meta[tissue== "limb", predActFromMTL_VISTA_random := {
@@ -99,47 +99,15 @@ clean[, file.type:= factor(file.type, unique(file.type))]
 clean <- clean[file.exists(path)]
 clean[, path:= normalizePath(path)]
 
+# Melt into long format (each condition is linked to one file) ----
+clean[, size:= file.size(path)/1e6]
+
+
+
+
 # Dcast and save ----
 final <- dcast(clean, ID+dataset+set+tissue+fold+replicate~file.type, value.var = "path")
 
 # Save ----
 saveRDS(final,
-        "Rdata/final_metadata_paper_v3.rds")
-
-# Sanity checks ----
-# Files exist 
-final[, pred_exist := file.exists(pred_file)]
-final[, fa_exist := file.exists(fa_file)]
-final[, contri_exist := file.exists(contrib_file)]
-final[, predActFromAcc_exist := file.exists(predActFromAcc_file)]
-final[, predActFromRandomIni_exist := file.exists(predActFromRandomIni_file)]
-final[, predActFromMTL_exist := file.exists(predActFromMTL_file)]
-
-table(final[ID == "model1_bulkATAC_tsx3Aug_2xBal_noW" & set %notin% c("training", "validation") & fold == "fold01"][which(!pred_exist), .(tissue, dataset, set)])
-table(final[ID == "model1_bulkATAC_tsx3Aug_2xBal_noW" & set %notin% c("training", "validation") & fold == "fold01" & dataset == "VISTA"][which(!predActFromAcc_exist) , .(tissue,dataset,set)])
-table(final[ID == "model1_bulkATAC_tsx3Aug_2xBal_noW" & set %notin% c("training", "validation") & fold == "fold01" & dataset == "VISTA"][which(!predActFromRandomIni_exist) , .(tissue,dataset,set)])
-table(final[ID == "model1_bulkATAC_tsx3Aug_2xBal_noW" & set %notin% c("training", "validation") & fold == "fold01" & dataset == "VISTA"][which(!predActFromMTL_exist) , .(tissue,dataset,set)])
-
-missing <- final[set %notin% c("training","validation") & dataset=="accessibility" & !pred_exist, ]
-table(missing[set=="test",.(ID,tissue,fold)])
-
-# Check if overlap between sets (CV leakage)
-final[, {
-  # Import regions
-  .c <- .SD[, {
-    browser()
-    importBed(bed_file)
-  }, .(set, bed_file)]
-  # Split sets
-  .c <- split(.c, .c$set)
-  # Overlaps between sets
-  for(i in seq(length(.c)-1)) {
-    for(j in (i+1):length(.c)) {
-      if(nrow(intersectBed(.c[[i]], .c[[j]])))
-        stop(paste(paste0(unlist(.BY), collapse= "+"), "-> Overlap were found between sets"))
-    }
-  }
-  # Progress
-  print(paste0(.GRP, "/", .NGRP))
-}, .(ID, dataset, tissue, fold)]
-
+        "/groups/stark/vloubiere/projects/DeepATAC_shenzhi/Rdata/paper_metadata_v1.rds")

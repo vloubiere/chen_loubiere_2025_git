@@ -22,12 +22,12 @@ for(tiss in c("heart", "limb", "midbrain")) {
   enh.contrib.file <- paste0(
     "/groups/stark/shenzhi.chen/projects/transferLearningMammalianEnhancerDesign202408/result/sequence_design/Leididi_design/",
     tiss,
-    "/selected_sequences/acc_contri/Model_final_selected_ledidi_designed_sequence.fasta_dinuc_shuffle_deepSHAP_DeepExplainer_importance_scores.h5"
+    "/selected_sequences/act_contri/Model_final_selected_ledidi_designed_sequence.fasta_dinuc_shuffle_deepSHAP_DeepExplainer_importance_scores.h5"
   )
   acc.contrib.file <- paste0(
     "/groups/stark/shenzhi.chen/projects/transferLearningMammalianEnhancerDesign202408/result/sequence_design/Leididi_design/",
     tiss,
-    "/selected_sequences/act_contri/Model_final_selected_ledidi_designed_sequence.fasta_dinuc_shuffle_deepSHAP_DeepExplainer_importance_scores.h5"
+    "/selected_sequences/acc_contri/Model_final_selected_ledidi_designed_sequence.fasta_dinuc_shuffle_deepSHAP_DeepExplainer_importance_scores.h5"
   )
   
   # Import enhancer contrib ----

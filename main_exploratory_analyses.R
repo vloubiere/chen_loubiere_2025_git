@@ -1,21 +1,6 @@
 setwd("/groups/stark/vloubiere/projects/DeepATAC_shenzhi/")
 
-# Functions ----
-file.edit("git_deepATAC/function/augmentation_function_tiling_sliding_window.R") # For ATAC-Seq peaks
-file.edit("git_deepATAC/function/compute_AUC.R") # Compute AUC
-
-# Clean VISTA tiles ----
-file.edit("git_deepATAC/subscripts/clean_VISTA_tiles.R")
-
-# Define folds for ATAC/transfer learning with bulk ATAC-Seq dataset ----
-file.edit("git_deepATAC/subscripts/confident_bulkATAC_peaks.R") # ATAC clustering
-file.edit("git_deepATAC/subscripts/define_bulkATAC_control_regions.R") # Non-overlapping controls
-file.edit("git_deepATAC/subscripts/nonOverlapping_bulkATAC_folds.R") # Split into non-overlapping train/valid/test
-file.edit("git_deepATAC/subscripts/augment_bulkATAC_regions.R") # Augmentation
-file.edit("git_deepATAC/subscripts/save_files_for_bulkATAC_training.R") # Save .fa .txt and .bed files
-file.edit("git_deepATAC/subscripts/sanity_check.R") # Check that vista test set absent from train/valid sets
-file.edit("git_deepATAC/subscripts/VISTA_chr18_PPV_bins.R") # Select chr18 bins for PPV sampling
-
+# ANALYSES FOR SHENZHI --------------------------------------------------------------------------
 # Diagnostics ATAC/VISTA models gradient ----
 file.edit("git_deepATAC/subscripts/retrieve_prediction_file_metadata.R") # Retrieve files
 file.edit("git_deepATAC/subscripts/model1_results_table.R") # Make full results table, not used
