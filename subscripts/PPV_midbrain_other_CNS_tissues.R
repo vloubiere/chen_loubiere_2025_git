@@ -42,9 +42,9 @@ PPV <- meta[, {
 PPV <- PPV[c("heart", "limb", "midbrain", "forebrain", "hindbrain", "neuralTube"), on= "tissue"]
 
 # Plot ----
-pdf("pdf/0_paper/PPV_midbrain_compare_other_CNS_tissues.pdf", width = 3, height = 3)
+pdf("pdf/0_paper/PPV_midbrain_compare_other_CNS_tissues.pdf", width = 2.6, height = 3)
 vl_par()
 vl_barplot(PPV$V1,
            names.arg = PPV$tissue,
-           ylab= "Max. Midbrain model PPV (%)")
+           ylab= "Max. PPV (%)\n(midbrain model)")
 dev.off()

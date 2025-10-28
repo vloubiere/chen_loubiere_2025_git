@@ -51,15 +51,18 @@ file.edit("git_deepATAC/subscripts/scatterplot_PCC_accessibility_models_per_tiss
 file.edit("git_deepATAC/subscripts/scatterplot_PCC_accessibility_models_delta.R")
 # Overlap VISTA tiles (S1d)
 file.edit("git_deepATAC/subscripts/heatmap_overlap_VISTA_tiles.R")
-# PPV other CNS tissues midbrain model (S1e)
+# Overlap midbrain enhancers CNS sub regions (S1e)
+file.edit("git_deepATAC/subscripts/pie_chart_overlap_midbrain_sub_CNS_regions.R")
 # PPV other CNS tissues midbrain model (S1f)
 file.edit("git_deepATAC/subscripts/PPV_midbrain_other_CNS_tissues.R")
+# PPV other CNS tissues midbrain model (S1g)
+file.edit("git_deepATAC/subscripts/boxplot_predicted_values_panCNS_tiles.R")
 file.edit("git_deepATAC/subscripts/predict_activity_cross_models.R") # not used
-# Negative sequenes rejection (S1g)
+# Negative sequenes rejection (S1h)
 file.edit("git_deepATAC/subscripts/table_FALSE_POSITIVE_sequences.R")
-# PPV acc. model and random initiation models (S1h)
+# PPV acc. model and random initiation models (S1i)
 file.edit("git_deepATAC/subscripts/PPV_control_shuffled_models.R")
-# PPV difference between TL models and others (S1i)
+# PPV difference between TL models and others (S1j)
 file.edit("git_deepATAC/subscripts/PPV_control_shuffled_models_diff.R")
 
 # FIGURE 2 ----
