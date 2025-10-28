@@ -2,12 +2,12 @@ setwd("/groups/stark/vloubiere/projects/DeepATAC_shenzhi/")
 devtools::load_all("/groups/stark/vloubiere/vlite/")
 
 # Import metadata ----
-meta <- readRDS("Rdata/paper_metadata_v2.rds")
-meta <- meta[dataset=="activity" & ID=="model1_bulkATAC_tsx3Aug_2xBal_noW" & set %in% c("test", "random")]
-meta[, col:= c("blue", "limegreen", "gold", 'red', 'purple', 'sienna')[.GRP], tissue]
+meta <- readRDS("Rdata/paper_metadata_v3.rds")
+meta <- meta[dataset=="activity" & ID=="model1_bulkATAC_tsx3Aug_2xBal_noW" & tissue != "CNS"]
+meta <- meta[set %in% c("test", "random", "NegGenomicRegions")]
 
 # Plot ----
-pdf("pdf/0_paper/PPV_per_tissue.pdf", width = 6.25, height = 18)
+pdf("pdf/0_paper/PPV_per_tissue.pdf", width = 6.25, height = 15)
 vl_par(mfrow= c(6,2))
 meta[, {
   
@@ -31,21 +31,51 @@ meta[, {
     cmb[, lapply(.SD, mean), ID, .SDcols= c("score", "Predictions")]
   }, .(set)]
   
-  # Retrieve unique enhancers IDs
+  # Retrieve unique enhancers IDs ----
   dat[!grepl("^seq", ID), enh:= tstrsplit(ID, ":", keep= 1)]
+  dat[ID=="chr18", enh:= NA] # Should be set to NA (see enhancer-lvl PPV)
   
-  # Plot tile-lvl PPV
-  vl_PPV(
-    dat$Predictions,
-    dat$score, 
-    plot = T, 
-    col= adjustcolor(col, .6), 
-    main= paste0(tissue, " (", formatC(nrow(dat), big.mark = ","), " aug. tiles)"), 
-    show.max = FALSE
-  )
+  # Plot tile-lvl PPV ----
+  # Random sequences + test set
+  dat[set %in% c("test", "random"), {
+    vl_PPV(
+      Predictions,
+      score, 
+      plot = T, 
+      col= adjustcolor("red", .8),
+      show.max = FALSE,
+      show.pred.cutoff = F
+    )
+  }]
+  # Randomly sampled genomic seq + test set
+  dat[set %in% c("test", "NegGenomicRegions"), {
+    vl_PPV(
+      Predictions,
+      score, 
+      plot = T, 
+      col= adjustcolor("blue", .8),
+      show.max = FALSE,
+      show.pred.cutoff = F,
+      add= T
+    )
+  }]
+  # Test set only
+  cutoff <- dat[set=="test", {
+    vl_PPV(
+      Predictions,
+      score, 
+      plot = T, 
+      col= adjustcolor("black", .8),
+      add= T
+    )
+  }]
+  
+  # Print PPV at cutoff and store predict_cutoff
+  print(paste(tissue, cutoff$PPV_at_cutoff))
+  cutoff <- cutoff$predict_cutoff
   
   # Add legend
-  cutoff <- dat[set=="test", vl_PPV(Predictions, score, plot = T, col= col, add= T)]$predict_cutoff
+  title(main= paste0(tissue, " (", formatC(sum(dat$set=="test"), big.mark = ","), " aug. tiles)"))
   vista_total <- length(unique(na.omit(dat$enh)))
   vista_active <- length(unique(na.omit(dat[score==1, enh])))
   vista_left <- length(unique(na.omit(dat[score==1 & Predictions >= cutoff, enh])))
@@ -58,14 +88,14 @@ meta[, {
       paste(vista_left, "enh. >= cutoff")
     )
   )
-  # Add legend
   vl_legend(
     legend= c(
       "Test set",
-      "+ 600k rdm. seq."
+      "+ 300k rdm. seq.",
+      "+ 300k neg. genomic regions"
     ),
     lwd= 1,
-    col= c(col, adjustcolor(col, .4))
+    col= adjustcolor(c("black", "red", "blue"), .9)
   )
   
   # Plot enhancer-level PPV
@@ -80,5 +110,5 @@ meta[, {
   )
   
   print(".")
-}, .(tissue, col)]
+}, tissue]
 dev.off()

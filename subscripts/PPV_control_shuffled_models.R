@@ -2,14 +2,14 @@ setwd("/groups/stark/vloubiere/projects/DeepATAC_shenzhi/")
 devtools::load_all("/groups/stark/vloubiere/vlite/")
 
 # Import metadata ----
-meta <- readRDS("Rdata/paper_metadata_v2.rds")
-meta <- meta[dataset=="activity" & ID=="model1_bulkATAC_tsx3Aug_2xBal_noW" & set %in% c("test", "random")]
-meta <- meta[set== "test"]
-meta[, col:= c("blue", "limegreen", "gold", 'red', 'purple', 'sienna')[.GRP], tissue]
+meta <- readRDS("Rdata/paper_metadata_v3.rds")
+meta <- meta[dataset=="activity" & ID=="model1_bulkATAC_tsx3Aug_2xBal_noW"]
+meta <- meta[set=="test" & tissue!="CNS"]
 meta <- melt(
   meta,
-  id.vars = c("tissue", "col", "fold", "replicate","obs_file" ),
-  measure.vars = c("pred_file", "predActFromAcc_file", "predActFromMTL_file", "predActFromRandomIni_file"),
+  id.vars = c("tissue", "fold", "replicate","obs_file" ),
+  # measure.vars = c("pred_file", "predActFromAcc_file", "predActFromMTL_file", "predActFromRandomIni_file"),
+  measure.vars = c("pred_file", "predActFromAcc_file", "predActFromRandomIni_file"),
   value.name = "pred_file"
 )
 
@@ -32,62 +32,64 @@ meta[, {
   # Scale predictions from the accessibility model from 0 to 1
   cmb[, predActFromAcc_file:= (predActFromAcc_file-min(predActFromAcc_file))/diff(range(predActFromAcc_file))]
   
-  # Plot PPV tissue
+  # Plot PPV using randomly initialized model
   ppv <- vl_PPV(
-    cmb$pred_file, 
+    cmb$predActFromRandomIni_file, 
     cmb$score,
     plot = T, 
-    col= adjustcolor(col, .6), 
+    col= adjustcolor("red", .6), 
     main= paste0(tissue, " (", formatC(nrow(cmb), big.mark = ","), " aug. tiles)"), 
-    show.max = TRUE,
+    show.max = FALSE,
     show.max.value = FALSE,
-    show.pred.cutoff = F
-  )$PPV_at_cutoff
+    show.pred.cutoff = F,
+    xlim= c(0, 1),
+    ylim= c(0, 100)
+  )
   
   # Add activity model prediction
   ppv1 <- vl_PPV(
     cmb$predActFromAcc_file, 
     cmb$score,
     add = T, 
-    col= adjustcolor("black", .6), 
-    show.max = TRUE,
+    col= adjustcolor("blue", .6), 
+    show.max = FALSE,
     show.max.value = FALSE,
     show.pred.cutoff = F
-  )$PPV_at_cutoff
+  )
   
-  # Add swapped tissue
-  ppv2 <- vl_PPV(
-    cmb$predActFromMTL_file, 
-    cmb$score,
-    add = T, 
-    col= adjustcolor("grey30", .6), 
-    show.max = TRUE,
-    show.max.value = FALSE,
-    show.pred.cutoff = F
-  )$PPV_at_cutoff
+  # # Add swapped tissue
+  # ppv2 <- vl_PPV(
+  #   cmb$predActFromMTL_file, 
+  #   cmb$score,
+  #   add = T, 
+  #   col= adjustcolor("grey30", .6), 
+  #   show.max = TRUE,
+  #   show.max.value = FALSE,
+  #   show.pred.cutoff = F
+  # )
   
-  # Add randomly initiated model
+  # Add PPV after transfer-learning 
   ppv3 <- vl_PPV(
-    cmb$predActFromRandomIni_file, 
+    cmb$pred_file, 
     cmb$score,
     add = T, 
-    col= adjustcolor("grey80", .6), 
-    show.max = TRUE,
+    col= adjustcolor("black", .6), 
+    show.max = FALSE,
     show.max.value = FALSE,
     show.pred.cutoff = F
-  )$PPV_at_cutoff
+  )
   
   # Add legend
   vl_legend(
     legend= c(
-      paste0("TL model (max= ", round(ppv, 1), "%)"),
-      paste0("Scaled acc. model (max= ", round(ppv1, 1), "%)"),
-      paste0("Swap tissue labels (max= ", round(ppv2, 1), "%)"),
-      paste0("Rdm init. (max= ", round(ppv3, 1), "%)")
+      "TL model",
+      "Acc. model (scaled)",
+      # paste0("Swap tissue labels (max= ", round(ppv2, 1), "%)"),
+      "Rdm init."
       ),
     lwd= 1,
-    col= c(col, "black", "darkgrey", "lightgrey")
+    col= adjustcolor(c("black", "blue", "red"), 6)
     )
   print(".")
-}, .(tissue, col)]
+}, .(tissue)]
 dev.off()

@@ -2,7 +2,7 @@ setwd("/groups/stark/vloubiere/projects/DeepATAC_shenzhi/")
 devtools::load_all("/groups/stark/vloubiere/vlite/")
 
 # Import metadata ----
-meta <- readRDS("Rdata/paper_metadata_v2.rds")
+meta <- readRDS("Rdata/paper_metadata_v3.rds")
 meta <- meta[dataset=="accessibility" & ID=="model1_bulkATAC_tsx3Aug_2xBal_noW" & set=="testCenterActBins"]
 
 # Output files ----

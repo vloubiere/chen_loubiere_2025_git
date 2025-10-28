@@ -2,7 +2,7 @@ setwd("/groups/stark/vloubiere/projects/DeepATAC_shenzhi/")
 devtools::load_all("/groups/stark/vloubiere/vlite/")
 
 # Import metadata ----
-meta <- readRDS("Rdata/paper_metadata_v2.rds")
+meta <- readRDS("Rdata/paper_metadata_v3.rds")
 meta <- meta[tissue %in% c("midbrain", "heart", "limb")]
 meta <- meta[dataset=="accessibility" & ID=="model1_bulkATAC_tsx3Aug_2xBal_noW" & set=="test"]
 
@@ -28,7 +28,7 @@ dat[, ID:= tstrsplit(ID, "_", keep= 1)]
 # Compute distance closest promoter ----
 prom <- rtracklayer::import("/groups/stark/vloubiere/projects/ORFTRAP_1/db/gtf/gencode.vM25.basic.annotation.gtf.gz")
 prom <- as.data.table(prom)
-tss <- resizeBed(prom[type=="gene", .(seqnames, start, end)], "start", 0, 0)
+tss <- resizeBed(prom[type=="transcript", .(seqnames, start, end)], "start", 0, 0)
 uniq.tiles <- data.table(ID= unique(dat$ID))
 uniq.tiles[, c("seqnames", "start", "end"):= importBed(ID)[, .(seqnames, start, end)]]
 dist <- closestBed(uniq.tiles, tss)
@@ -68,7 +68,7 @@ kcl <- vlite::vl_heatmap(
   plot = F
 )$rows
 
-# Plot
+# Plot ----
 pdf("pdf/0_paper/heatmap_observed_vs_predicted_accessibility_models.pdf",
     width = 7,
     height = 4)
@@ -102,13 +102,14 @@ vlite::vl_heatmap(
 )
 # Add distance to TSS per cluster 
 cl.dist <- merge(hm$rows, uniq.tiles, by.x= "name", by.y= "ID")
+cl.dist <- cl.dist[, .(perc= sum(dist<=1000)/.N*100), cluster]
 vl_par(mai= c(.5, 0.5, .5, .2),
        mgp= c(1.5, .35, 0),
        cex.axis= .4)
-vl_boxplot(
-  dist~cluster,
+barplot(
+  perc~cluster,
   cl.dist,
   xlab= "Clusters",
-  ylab= "Distance to closest TSS"
+  ylab= "% overlapping TSSs (+/- 1kb)"
 )
 dev.off()

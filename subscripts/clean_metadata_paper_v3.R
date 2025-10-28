@@ -2,7 +2,6 @@
 setwd("/groups/stark/shenzhi.chen/projects/transferLearningMammalianEnhancerDesign202408/")
 devtools::load_all("/groups/stark/vloubiere/vlite/")
 options(datatable.prettyprint.char = 20)
-library(Biostrings)
 
 # Import models metadata ----
 meta <- readxl::read_xlsx("clean_version/Rdata/metadata_ATACSeq_models.xlsx", skip = 4)
@@ -14,14 +13,14 @@ meta <- meta[, .(fold= paste0("fold0", 1:3)), (meta)]
 meta <- meta[, .(replicate= paste0("rep", 1:2)), (meta)]
 meta <- meta[, .(set= c("training", "validation", "test")), (meta)]
 
-# Retrieve VISTA files ----
+# Retrieve input files ----
 # bed
-meta[, bed_VISTA:= paste0("/groups/stark/vloubiere/projects/DeepATAC_shenzhi/db/bed/",
-                          dataset,"/VISTA/", tissue, "/", fold, "_sequences_", set,".bed")]
-meta[, bed_ATAC:= paste0("/groups/stark/vloubiere/projects/DeepATAC_shenzhi/db/bed/",
-                         dataset,"/ATAC/",  tissue, "/", augmentation, "/", balancing, "/", fold, "_sequences_", set,".bed")]
-meta[, bed_ATAC:= paste0("db/training_dataset/",
-                         dataset,"/ATAC/",  tissue, "/", augmentation, "/", balancing, "/", fold, "_sequences_", set,".bed")]
+meta[tissue=="CNS", bed_VISTA:= paste0("db/training_dataset/VISTA_20240901/", tissue, "/", fold, "_sequences_", set,".bed")]
+meta[tissue!="CNS", bed_VISTA:= paste0("/groups/stark/vloubiere/projects/DeepATAC_shenzhi/db/bed/",
+                                       dataset,"/VISTA/", tissue, "/", fold, "_sequences_", set,".bed")]
+meta[tissue=="CNS", bed_ATAC:= paste0("db/training_dataset/", Batch, "_bulkATAC_", augmentation, "Aug_", balancing, "Bal/",  tissue, "/", fold, "_sequences_", set,".bed")]
+meta[tissue!="CNS", bed_ATAC:= paste0("/groups/stark/vloubiere/projects/DeepATAC_shenzhi/db/bed/",
+                                      dataset,"/ATAC/",  tissue, "/", augmentation, "/", balancing, "/", fold, "_sequences_", set,".bed")]
 # fasta
 meta[, fa_VISTA:= paste0("db/training_dataset/VISTA_20240901/",
                          tissue, "/", fold, "_sequences_", set,".fa")]
@@ -33,7 +32,7 @@ meta[, obs_VISTA:= paste0("db/training_dataset/VISTA_20240901/",
 meta[, obs_ATAC:= paste0("db/training_dataset/",
                          Batch, "_bulkATAC_", augmentation, "Aug_", balancing, "Bal/", tissue, "/", fold, "_sequences_activity_", set,".txt")]
 
-# Dcast ----
+# Dcast to have one set per column ----
 meta <- dcast(meta,
               augmentation + balancing + weight + ID + tissue + fold + replicate ~ set,
               value.var = list("bed_VISTA", "bed_ATAC", "fa_VISTA", "fa_ATAC", "obs_VISTA", "obs_ATAC"))
@@ -43,25 +42,34 @@ meta[, obs_access_testBestDesign := paste0("db/training_dataset/model1_bulkATAC_
                                            augmentation, "Aug_", balancing, "Bal/", tissue, "/", fold, "_sequences_testBestDesign.txt")]
 meta[, fa_access_testBestDesign := paste0("db/training_dataset/model1_bulkATAC_",
                                           augmentation, "Aug_", balancing, "Bal/", tissue, "/", fold, "_sequences_testBestDesign.fa")]
-meta[, bed_access_testBestDesign := paste0("db/training_dataset/model1_bulkATAC_",
-                                           augmentation, "Aug_", balancing, "Bal/", tissue, "/", fold, "_sequences_testBestDesign.bed")]
+meta[tissue!="CNS",
+     bed_access_testBestDesign := paste0("/groups/stark/vloubiere/projects/DeepATAC_shenzhi/db/bed/bulkATAC/ATAC/", 
+                                         tissue, "/", augmentation, "/", balancing, "/", fold, "_sequences_testBestDesign.bed")]
+meta[tissue=="CNS",
+     bed_access_testBestDesign := paste0("db/training_dataset/model1_bulkATAC_",
+                                         augmentation, "Aug_", balancing, "Bal/", tissue, "/", fold, "_sequences_testBestDesign.bed")]
 
 # Retrieve files for the full chr18, used for screenshots and as an alternative test set ---
 meta[, obs_access_chr18 := paste0("db/testing_dataset/chr18/", tissue, "_chr18_bins_access_obs.txt")]
 meta[, fa_access_chr18 := paste0("db/testing_dataset/chr18/chr18_bins.fa")]
 meta[, bed_access_chr18 := paste0("db/testing_dataset/chr18/", tissue, "_chr18_bins_access_obs.bed")]
 
-# Add fasta files containing random sequences (used as extra test set) ----
-meta[, fa_access_random:= "db/fasta/testing_dataset/random_sequences_600k.fasta"]
-meta[, fa_VISTA_random:= "db/fasta/testing_dataset/random_sequences_600k.fasta"]
+# Add fasta files containing random sequences (used as extra test set for PPV) ----
+meta[, fa_access_random:= "db/fasta/testing_dataset/random_sequences_600k.fasta"] # These are actually 300k!
+meta[, fa_VISTA_random:= "db/fasta/testing_dataset/random_sequences_600k.fasta"] # These are actually 300k!
 
-# Retrieve activity prediction files (VISTA) ----
-meta[, c("pred_VISTA_test", "pred_VISTA_random"):= {
+# Add fasta files containing negative control sequences (used as extra test set) ----
+meta[, fa_access_NegGenomicRegions:= "db/fasta/testing_dataset/PPV_bins_chr18.fa"] # These are actually 300k!
+meta[, fa_VISTA_NegGenomicRegions:= "db/fasta/testing_dataset/PPV_bins_chr18.fa"] # These are actually 300k!
+
+# Add missing VISTA predictions ----
+meta[, c("pred_VISTA_test", "pred_VISTA_random", "pred_VISTA_NegGenomicRegions"):= {
   # folder 
   folder <- paste0("result/model/VISTA_model/", ID, "/", tissue, "/results_", fold, "_", tissue, "_DeepSTARR2_", replicate)
   .(
     file.path(folder, paste0(fold, "_sequences_test.fa_predictions_enhancer_Model.txt")),
-    file.path(folder, "random_sequences_600k.fasta_predictions_enhancer_Model.txt")
+    file.path(folder, "random_sequences_600k.fasta_predictions_enhancer_Model.txt"),
+    file.path(folder, "PPV_bins_chr18.fa_predictions_enhancer_Model.txt")
   )
 }, .(ID, tissue, fold, replicate)]
 
@@ -152,4 +160,4 @@ clean[, path:= normalizePath(path)]
 # Dcast and SAVE ----
 final <- dcast(clean, ID+dataset+set+tissue+fold+replicate~file.type, value.var = "path")
 saveRDS(final,
-        "/groups/stark/vloubiere/projects/DeepATAC_shenzhi/Rdata/paper_metadata_v2.rds")
+        "/groups/stark/vloubiere/projects/DeepATAC_shenzhi/Rdata/paper_metadata_v3.rds")

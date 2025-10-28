@@ -14,8 +14,11 @@ sel <- dat[id %in% dat[zscore>=zscore_cutoff, id]]
 
 # Get motif names and retain only best motif per cluster----
 all_TFs <- readRDS("/groups/stark/vloubiere/motifs_db/non_redudant_mammals_Jeff_motifs_full.rds")
-sel[, TFs:= , cluster]
-sel[, TFs:= paste0(sort(unique(unlist(tstrsplit(unique(TFs), "\\+")))), collapse= ","), cluster]
+all_TFs <- all_TFs$meta[, .(ID, TF, mouse_id)]
+sel <- merge(sel, all_TFs, by.x= "id", by.y= "ID", all.x= T)
+# Keep all TF IDs passing zscore cutoff per cluster
+sel[zscore>=zscore_cutoff, TF:= .(.(unlist(unique(TF)))), cluster]
+sel[zscore>=zscore_cutoff, mouse_id:= .(.(unlist(unique(mouse_id)))), cluster]
 
 # Subset and dcast ----
 sel.mot <- sel[, .SD[which.max(zscore)], cluster][zscore >= zscore_cutoff]$motif
@@ -48,6 +51,7 @@ hm <- vl_heatmap(clipped,
                  row.gap.width = .5)
 dev.off()
 
+# Save ----
 hm <- hm$rows
-hm[sel, TFs:= i.TFs, on= "name==id"]
+hm <- merge(hm, sel[, .(id, TF, mouse_id)], by.x= "name", by.y= "id", all.x= T)
 saveRDS(hm, "Rdata/motif_clusters_paper_3_tissues.rds")

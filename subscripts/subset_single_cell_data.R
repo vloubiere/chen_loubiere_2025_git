@@ -3,20 +3,20 @@ devtools::load_all("/groups/stark/vloubiere/vlite/")
 require(Seurat)
 require(Matrix)
 
-# Import data
+# Import data ----
 mat <- fread(
   "/groups/stark/shenzhi.chen/projects/transferLearningMammalianEnhancerDesign202408/db/MouseAtlas/GSE119945_gene_count.txt.gz",
   sel= 1:3,
   col.names = c("gene", "cell", "count")
 )
 
-# Subset E11.5 cells
+# Subset E11.5 cells ----
 cells <- fread("/groups/stark/shenzhi.chen/projects/transferLearningMammalianEnhancerDesign202408/db/MouseAtlas/GSE119945_cell_annotate.csv.gz")
 sub <- mat[cell %in% which(cells$day=="11.5")]
 sub[, cell:= .GRP, cell]
 cells <- cells[day=="11.5"]
 
-# Retrieve gene names
+# Retrieve gene names ----
 genes <- fread("/groups/stark/shenzhi.chen/projects/transferLearningMammalianEnhancerDesign202408/db/MouseAtlas/GSE119945_gene_annotate.csv.gz")
 genes[, gene_id:= tstrsplit(gene_id, "[.]", keep= 1)]
 sub[, gene_name:= genes$gene_short_name[gene]]
@@ -24,7 +24,8 @@ sub[, gene_id:= genes$gene_id[gene]]
 
 # Subset TF genes
 all_TFs <- readRDS("/groups/stark/vloubiere/motifs_db/non_redudant_mammals_Jeff_motifs_full.rds")
-clean <- sub[gene_id %in% na.omit(unlist(all_TFs$meta$mouse_id))]
+all_TFs <- na.omit(unlist(all_TFs$meta$mouse_id))
+clean <- sub[gene_id %in% all_TFs]
 
 # Subset TF genes
 clean[, gene_id:= factor(gene_id)]
