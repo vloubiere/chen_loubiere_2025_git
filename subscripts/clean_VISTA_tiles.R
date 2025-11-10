@@ -32,8 +32,8 @@ vista <- vista[width<=5000]
 
 # Resize short enhancers to 1.5kb ----
 # We will be using 1001bp tiles for augmentation, so center +/-250 will always be there
-vista[width<1500, start:= round((start+end)/2)-750]
-vista[width<1500, end:= start+1501]
+vista[width<1501, start:= round((start+end)/2)-750]
+vista[width<1501, end:= start+1501]
 vista[, width:= NULL]
 
 # Order and save ----
@@ -41,9 +41,3 @@ setcolorder(vista,
             c("class", "peakID", "seqnames", "start", "end", "genome"))
 saveRDS(vista,
         "db/peaks/vista_tiles_clean.rds")
-
-# Compare to old ----
-identical(vista[, paste0(seqnames, ":", start, "-", end)],
-          readRDS("db/peaks/old/vista_tiles_clean.rds")$coor)
-
-

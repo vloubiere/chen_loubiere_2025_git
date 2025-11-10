@@ -1,10 +1,13 @@
 setwd("/groups/stark/vloubiere/projects/DeepATAC_shenzhi/")
+require(vlfunctions)
 
 # Bin the whole genome  ----
 bins <- vl_binBSgenome(BSgenome.Mmusculus.UCSC.mm10::BSgenome.Mmusculus.UCSC.mm10,
                        bins.width = 1001,
                        steps.width = 1000)
-bins <- vl_resizeBed(bins, "center", 1400, 1400, genome= "mm10") # Account for later augmentation
+
+# Resize to account for later augmentation  ----
+bins <- vl_resizeBed(bins, "center", 1400, 1400, genome= "mm10")
 
 # Select canonical chromosomes ----
 bins <- bins[seqnames %in% paste0("chr", c(1:19, "X"))]

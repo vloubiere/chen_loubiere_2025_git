@@ -2,7 +2,7 @@ setwd("/groups/stark/vloubiere/projects/DeepATAC_shenzhi/")
 source("git_deepATAC/function/augmentation_function_tiling_sliding_window.R")
 require(vlfunctions)
 
-# Import ATAC-Seq peaks, vista tiles, control regions and coompute overlaps ----
+# Import ATAC-Seq peaks, vista tiles, control regions and compute overlaps ----
 vista <- readRDS("db/peaks/vista_tiles_clean.rds")
 vista[, start:= start-100]# Extended to reflect later augmentation
 vista[, end:= end+100]# Extended to reflect later augmentation
@@ -39,5 +39,4 @@ cmb[, (folds):= lapply(seq(folds), function(i) {
 })]
 
 # Save ----
-saveRDS(cmb,
-        "db/folds/bulkATAC_folds.rds")
+saveRDS(cmb, "db/folds/bulkATAC_folds.rds")

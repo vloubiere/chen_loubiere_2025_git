@@ -25,7 +25,7 @@ meta[, bedgraph.file:= {
     .c[, end:= end-1]
     bins <- binBed(.c, bins.width = 200)
     # Unlog signal (to compare with ATAC-Seq)
-    mean <- bins[, .(score= 2^mean(Predictions)), .(seqnames, start, end)]
+    mean <- bins[, .(score= 2^mean(Predictions)-1), .(seqnames, start, end)]
     # Save bedraph file
     rtracklayer::export(mean, bedgraph.file)
   }

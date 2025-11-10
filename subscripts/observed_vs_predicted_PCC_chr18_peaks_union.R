@@ -25,9 +25,9 @@ colnames(mat) <- c("Midbrain.obs", "Heart.obs", "Limb.obs",
 cor <- data.table(
   tissue= c("Midbrain", "Heart", "Limb"),
   PCC= c(
-    cor(mat[, "Midbrain.pred"], mat[, "Midbrain.obs"]),
-    cor(mat[, "Heart.pred"], mat[, "Heart.obs"]),
-    cor(mat[, "Limb.pred"], mat[, "Limb.obs"])
+    cor(log2(mat[, "Midbrain.pred"]+1), log2(mat[, "Midbrain.obs"]+1)),
+    cor(log2(mat[, "Heart.pred"]+1), log2(mat[, "Heart.obs"]+1)),
+    cor(log2(mat[, "Limb.pred"]+1), log2(mat[, "Limb.obs"]+1))
   )
 )
 

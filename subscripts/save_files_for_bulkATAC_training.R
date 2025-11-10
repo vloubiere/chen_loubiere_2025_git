@@ -46,12 +46,12 @@ NsampleGC <- length(unique(c(TS$peakID, GO$peakID)))*10
 # Import folds ----
 folds <- readRDS("db/folds/bulkATAC_folds.rds")
 
-# VISTA tiles ----
+# VISTA tiles (for each FOLD/AUG/BALANCING) ----
 overwrite <- F
 meta[, {
   if(any(!file.exists(unlist(.BY)[-c(1,2)])) | overwrite)
   {
-    # Select VISTA tiles ID
+    # Select VISTA tiles ID for fold X
     IDs <- folds[group=="vista", c("peakID", fold), with= F]
     setnames(IDs,
              c("peakID", "set"))
@@ -122,55 +122,70 @@ meta[, {
      fa_VISTA_training, fa_VISTA_validation, fa_VISTA_test,
      obs_VISTA_training, obs_VISTA_validation, obs_VISTA_test)]
 
-# ATAC peaks ----
+# ATAC-Seq peaks (for each FOLD/AUG/BALANCING) ----
 meta[, {
   if(any(!file.exists(unlist(.BY)[-c(1,2,3,4)])) | overwrite)
   {
     
-    # Select ATAC-seq peaks ID
+    # Select a fold of ATAC-seq peak IDs
     IDs <- folds[group=="ATAC", c("peakID", fold), with= F]
     setnames(IDs,
              c("peakID", "set"))
     
-    # Globally Open
+    # Split Globally Open peaks between fold's training/validation/test/shared.test sets
     GO[IDs, set:= i.set, on= "peakID"]
+    # Retrieve coordinates, coverage ...
     .GO <- merge(IDs,
                  GO[, c("peakID", "ID", "shift", paste0(tissue, ".cov"), "seqnames", "start", "end", "strand", "seq", "class", tissue), with= F],
                  by= "peakID")
     setnames(.GO,
              c(tissue, paste0(tissue, ".cov")),
              c("label", "score"))
+    # Add tissue-specific accessibility labels
     .GO[, ID:= paste0(ID, "__", ifelse(label==1, "open", "closed"))]
+    # Remove if nogo balancing (NO Globally Open)
     if(balancing=="nogo")
       .GO <- .GO[0]
     
-    # Tissue Specific
+    # Split tissue-specific peaks between fold's training/validation/test/shared.test sets
     TS[IDs, set:= i.set, on= "peakID"]
+    # Retrieve coordinates, coverage ...
     .TS <- merge(IDs,
                  TS[, c("peakID", "ID", "shift", paste0(tissue, ".cov"), "seqnames", "start", "end", "strand", "seq", "class", tissue), with= F],
                  by= "peakID")
     setnames(.TS,
              c(tissue, paste0(tissue, ".cov")),
              c("label", "score"))
+    # Add tissue-specific accessibility labels
     .TS[, ID:= paste0(ID, "__", ifelse(label==1, "open", "closed"))]
     .TS[, class:= ifelse(label==1, "tissueSpecific", "specificClosed")]
-    .TS <- if(augmentation=="tsx3") # TS are all taken (not specificClosed)
-      .TS[label==1 | shift %in% seq(-400, 400, 200)] else
-        .TS[shift %in% seq(-400, 400, 200)] # Regular 10X
+    # Depending on strategy
+    .TS <- if(augmentation=="tsx3") {
+      # For this strategy, all tissue-specific tiles are kept (label==1)
+      # But only 10 tiles are kept for specificClosed (-400, -200, 0, 200, 400) on +/- strands
+      .TS[label==1 | shift %in% seq(-400, 400, 200)]
+    } else {
+      # Regular 10X augmentation (-400, -200, 0, 200, 400) on +/- strands
+      .TS[shift %in% seq(-400, 400, 200)]
+    }
     
-    # Globally Closed
+    # Split Globally Closed peaks between fold's training/validation/test/shared.test sets
     IDs <- folds[group=="ctl", c("peakID", fold), with= F]
     setnames(IDs,
              c("peakID", "set"))
     .GC <- if(augmentation=="nogc")
     {
+      # In this strategy, globally closed regions are not augmented (no tiling)
       GCnoAUG[IDs, set:= i.set, on= "peakID"]
+      # Retrieve coordinates, coverage ...
       merge(IDs,
             GCnoAUG[, c("peakID", "ID", "shift", paste0(tissue, ".cov"), "seqnames", "start", "end", "strand", "seq", "class", tissue), with= F],
             by= "peakID")
     }else
     {
+      # Regular tiling (10 tiles/region)
       GC[IDs, set:= i.set, on= "peakID"]
+      # Retrieve coordinates, coverage ...
       merge(IDs,
             GC[, c("peakID", "ID", "shift", paste0(tissue, ".cov"), "seqnames", "start", "end", "strand", "seq", "class", tissue), with= F],
             by= "peakID")
@@ -178,6 +193,7 @@ meta[, {
     setnames(.GC,
              c(tissue, paste0(tissue, ".cov")),
              c("label", "score"))
+    # Add tissue-specific accessibility labels
     .GC[, ID:= paste0(ID, "__", ifelse(label==1, "open", "closed"))]
     
     # Balancing

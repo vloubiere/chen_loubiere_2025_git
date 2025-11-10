@@ -1,5 +1,5 @@
 setwd("/groups/stark/vloubiere/projects/DeepATAC_shenzhi/")
-devtools::load_all("/groups/stark/vloubiere/vlite/")
+require(vlfunctions)
 
 # Import metadata ----
 meta <- readxl::read_xlsx("Rdata/metadata_ATACSeq.xlsx")
@@ -110,19 +110,20 @@ class <- c("globallyOpen",
            "forebrainHindbrainMidbrain",
            "globallyOpen")
 dat$class <- class[som$unit.classif]
-dat[, class:= factor(class,
-                     c(
-                       "heart",
-                       "limb",
-                       "forebrain",
-                       "midbrain",
-                       "hindbrain",
-                       "neuralTube",
-                       "hindbrainMidbrainNeuralTube",
-                       "forebrainHindbrainMidbrain",
-                       "panNeuronal",
-                       "globallyOpen"
-                     )
+dat[, class:= factor(
+  class,
+  c(
+    "heart",
+    "limb",
+    "forebrain",
+    "midbrain",
+    "hindbrain",
+    "neuralTube",
+    "hindbrainMidbrainNeuralTube",
+    "forebrainHindbrainMidbrain",
+    "panNeuronal",
+    "globallyOpen"
+  )
 )]
 dat[, name:= paste0(class, " (n=", formatC(.N, big.mark = ","), ")"), class]
 dat[, name:= factor(name,

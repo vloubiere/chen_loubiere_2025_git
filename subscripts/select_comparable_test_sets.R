@@ -11,7 +11,7 @@ meta[, fold:= tstrsplit(basename(bed_file), "_", keep= 1)]
 meta <- meta[dataset!="VISTA"]
 
 # Problem: in our old design, the test set differed between different strategies -> PCC can't be compared ----
-# So for consistency, I ill now just copy and paste the test set of our favorite design in all folders
+# So for consistency, I will now just copy and paste the test set of our favorite design in all folders
 meta[, test_bed_file_best:= bed_file[augmentation=="tsx3" & balancing=="2x"], .(tissue, fold)]
 meta[, copy_name:= gsub("_test.bed$", "_testBestDesign.bed", bed_file)]
 meta[, file.copy(test_bed_file_best, copy_name, overwrite = T), .(test_bed_file_best, copy_name)]
