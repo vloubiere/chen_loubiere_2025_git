@@ -58,6 +58,22 @@ file.edit("chen_loubiere_2025_git/subscripts/heatmap_observed_vs_predicted_acces
 # PPV (Fig. 1d)
 file.edit("chen_loubiere_2025_git/subscripts/PPV.R")
 
+# FIGURE 2 ----
+# Motif contrib Heatmap (Fig. 2a) ----
+# Call motif positions
+file.edit("chen_loubiere_2025_git/subscripts/create_non_redundant_motif_set_Jeff.R")
+file.edit("chen_loubiere_2025_git/subscripts/collapsed_test_set_coordinates.R")
+file.edit("chen_loubiere_2025_git/subscripts/compute_motif_positions_for_collapsed_test_set_coordinates.R")
+# Contribution mean contribution score per motif instance
+file.edit("chen_loubiere_2025_git/subscripts/VISTA_mean_motif_contrib_per_tissue.R")
+file.edit("chen_loubiere_2025_git/subscripts/ATAC_mean_motif_contrib_per_tissue.R")
+file.edit("chen_loubiere_2025_git/subscripts/compute_mean_contrib_per_motif.R")
+# Motif contrib Heatmaps
+file.edit("chen_loubiere_2025_git/subscripts/heatmap_contrib_zscore_3_tissues.R")
+# Motif contribution tracks (Fig. 2b-d) ----
+file.edit("chen_loubiere_2025_git/subscripts/contribution_tracks_designed_enh.R")
+file.edit("chen_loubiere_2025_git/subscripts/contribution_tracks_designed_enh_new.R")
+
 # FIGURE S1 ----
 # Barplot % TSS overlaps ATAC-Seq peaks cluster (Fig. S1a, see Fig. 1c)
 # PCC scatterplots accessibility models (S1b-c)
@@ -79,22 +95,6 @@ file.edit("chen_loubiere_2025_git/subscripts/PPV_control_shuffled_models.R")
 # PPV difference between TL models and others (S1j)
 file.edit("chen_loubiere_2025_git/subscripts/PPV_control_shuffled_models_diff.R")
 
-# FIGURE 2 ----
-# Motif contrib Heatmap (Fig. 2a) ----
-# Call motif positions
-file.edit("chen_loubiere_2025_git/subscripts/create_non_redundant_motif_set_Jeff.R")
-file.edit("chen_loubiere_2025_git/subscripts/collapsed_test_set_coordinates.R")
-file.edit("chen_loubiere_2025_git/subscripts/compute_motif_positions_for_collapsed_test_set_coordinates.R")
-# Contribution mean contribution score per motif instance
-file.edit("chen_loubiere_2025_git/subscripts/VISTA_mean_motif_contrib_per_tissue.R")
-file.edit("chen_loubiere_2025_git/subscripts/ATAC_mean_motif_contrib_per_tissue.R")
-file.edit("chen_loubiere_2025_git/subscripts/compute_mean_contrib_per_motif.R")
-# Motif contrib Heatmaps
-file.edit("chen_loubiere_2025_git/subscripts/heatmap_contrib_zscore_3_tissues.R")
-# Motif contribution tracks (Fig. 2b-d) ----
-file.edit("chen_loubiere_2025_git/subscripts/contribution_tracks_designed_enh.R")
-file.edit("chen_loubiere_2025_git/subscripts/contribution_tracks_designed_enh_new.R")
-
 # FIGURE S2 ----
 # TFs GO enrichment (S2a)
 file.edit("chen_loubiere_2025_git/subscripts/TFs_GO_enrichment.R")
@@ -106,26 +106,13 @@ file.edit("chen_loubiere_2025_git/subscripts/over_representation_TF_clusters.R")
 file.edit("chen_loubiere_2025_git/subscripts/compare_predicted_act_designed_seq_boxplot.R")
 file.edit("chen_loubiere_2025_git/subscripts/barplot_percentage_specific_designed_seq.R")
 
-# DELETED FIGURES -----------------------
-# Compare 20 different approaches
-file.edit("chen_loubiere_2025_git/subscripts/heatmap_PCC_comparison_20_model_approaches.R")
-file.edit("chen_loubiere_2025_git/subscripts/heatmap_PPV_comparison_20_model_approaches.R")
+# Figure S3 ----
+# TL reweighting reproducibility ----
+file.edit("chen_loubiere_2025_git/subscripts/boxplot_motif_contrib_reproducibility.R")
 
-# REVISION Nature Genetics ----------------------------------------------------------------------
-
-# Transfer learning using chromatin-inferred enhancer labels ----
-# ChIP-seq peaks
-file.edit("chen_loubiere_2025_git/subscripts/ChIPseq_peaks_rds.R")
-file.edit("chen_loubiere_2025_git/subscripts/ChIPseq_QC_check_overlaps_between_peaks.R") # Sanity check
-# Define labels for transfer-learning
-file.edit("chen_loubiere_2025_git/subscripts/define_VISTA_labels_based_on_enhancers_hallmarks.R") # VISTA (TL1 -> TL7, not used!)
-file.edit("chen_loubiere_2025_git/subscripts/define_ATAC_labels_based_on_enhancers_hallmarks.R") # ATAC peaks (TL8 -> TL14, not used!)
-file.edit("chen_loubiere_2025_git/subscripts/enhancer_hallmarks_CV_on_VISTA.R")
-file.edit("chen_loubiere_2025_git/subscripts/enhancer_hallmarks_number_of_sequences.R")
-
+# Figure S4 ----
 # Size distribution vista enhancers ----
 file.edit("chen_loubiere_2025_git/subscripts/revision_vista_size_distrib.R")
-
 # Sequence distance ----
 # Levenshtein
 file.edit("chen_loubiere_2025_git/subscripts/revision_sequence_levenshtein_distances.R")
@@ -136,17 +123,22 @@ file.edit("chen_loubiere_2025_git/subscripts/motif_enrichment_vista_and_designed
 file.edit("chen_loubiere_2025_git/subscripts/count_motifs_validated_enhancers.R")
 file.edit("chen_loubiere_2025_git/subscripts/revision_design_all_motifs.R")
 file.edit("chen_loubiere_2025_git/subscripts/revision_design_top_motifs.R")
-# K-mer (not used)
-file.edit("chen_loubiere_2025_git/subscripts/revision_sequence_kmer_distances.R") # K-mers not used for now
-file.edit("chen_loubiere_2025_git/subscripts/revision_sequence_kmer_distances_2.R") # K-mers not used for now
 
-# TL reweighting reproducibility ----
-file.edit("chen_loubiere_2025_git/subscripts/boxplot_motif_contrib_reproducibility.R")
+# Figure S6 ----
+# Transfer learning using chromatin-inferred enhancer labels ----
+# ChIP-seq peaks
+file.edit("chen_loubiere_2025_git/subscripts/ChIPseq_peaks_rds.R")
+file.edit("chen_loubiere_2025_git/subscripts/ChIPseq_QC_check_overlaps_between_peaks.R") # Sanity check
+# Define labels for transfer-learning
+file.edit("chen_loubiere_2025_git/subscripts/define_VISTA_labels_based_on_enhancers_hallmarks.R") # VISTA (TL1 -> TL7, not used!)
+file.edit("chen_loubiere_2025_git/subscripts/define_ATAC_labels_based_on_enhancers_hallmarks.R") # ATAC peaks (TL8 -> TL14, not used!)
+file.edit("chen_loubiere_2025_git/subscripts/enhancer_hallmarks_CV_on_VISTA.R")
+file.edit("chen_loubiere_2025_git/subscripts/enhancer_hallmarks_number_of_sequences.R")
 
+# For reviewers ----
 # PCC chr18 vs other test set ----
 file.edit("chen_loubiere_2025_git/subscripts/scatterplot_PCC_accessibility_models_chr18.R")
 file.edit("chen_loubiere_2025_git/subscripts/scatterplot_PCC_accessibility_models_other_chromosomes.R")
-
 # Activity initilization sequences ----
 file.edit("chen_loubiere_2025_git/subscripts/predicted_activity_init_sequences.R")
 file.edit("chen_loubiere_2025_git/subscripts/predicted_activity_random_genomic_sequences.R")
