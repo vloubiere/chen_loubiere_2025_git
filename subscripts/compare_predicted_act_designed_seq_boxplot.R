@@ -22,7 +22,8 @@ setnames(dat,
          c("Heart", "Limb", "Midbrain"))
 
 # Plot ----
-pdf("pdf/0_paper/boxplot_compare_predicted_act_per_tissue.pdf", 3.1, 2.8)
+# pdf("pdf/0_paper/boxplot_compare_predicted_act_per_tissue.pdf", 3.1, 2.8)
+pdf("pdf/_revision/boxplot_compare_predicted_act_per_tissue.pdf", 3.1, 2.8)
 vl_par(mfrow= c(1,3),
        mai= c(.9, .4, .9, .1),
        lwd= .5)
@@ -40,12 +41,19 @@ dat[, {
     viowex= .5,
     boxwex= .15
   )
-  if(tissue=="heart")
+  if(tissue=="heart") {
     abline(h= c(0,6), lty= 3)
-  if(tissue=="limb")
+    sel.enh <- unlist(.SD[id %in% c(311, 726, 834, 890, 845)])
+  }
+  if(tissue=="limb") {
     abline(h= c(0,5), lty= 3)
-  if(tissue=="midbrain")
+    sel.enh <- unlist(.SD[id %in% c(1104,  1121,  51,  103,  112)])
+  }
+  if(tissue=="midbrain") {
     abline(h= c(0,7), lty= 3)
+    sel.enh <- unlist(.SD[id %in% c(1008, 734, 543, 169, 5)])
+  }
+  points(rep(1:3, each= 5)+.4, sel.enh, pch= 16, cex= .5, col= adjustcolor("limegreen", .7))
   print("")
 }, tissue, .SDcols= c("Heart", "Limb", "Midbrain")]
 dev.off()

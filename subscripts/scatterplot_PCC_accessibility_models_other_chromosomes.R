@@ -9,7 +9,7 @@ meta <- meta[dataset=="accessibility" & ID=="model1_bulkATAC_tsx3Aug_2xBal_noW" 
 Cc <- c("grey70", "grey20")
 
 # Scatter plot ----
-pdf("pdf/0_paper/scatterplot_PCC_accessibility_models_per_tissue.pdf", 3*3, 3*3)
+pdf("pdf/0_paper/scatterplot_PCC_accessibility_models_other_chromosomes.pdf", 3*3, 3*3)
 vl_par(mfrow= c(3,3))
 meta[, {
   
@@ -19,6 +19,9 @@ meta[, {
   }, .(obs_file, pred_file, replicate, fold)]
   .c[, c("ID", "label"):= tstrsplit(ID, "__")]
   .c[, label:= factor(label, c("closed", "open"))]
+  
+  # Subsect chromosome 18 values ----
+  .c <- .c[!grepl("chr18", ID)]
   
   # SANITY CHECK! ----
   # Sequences on chromosome 18 should have 6 predicted values (2 rep, 3 folds)
@@ -35,18 +38,15 @@ meta[, {
   .c[, col:= adjustcolor(Cc[label], .5)]
   
   # Scatterplot random subset
-  Ntot <- nrow(.c)
   set.seed(1)
   .c[sample(.N, 5000), {
-    vlite::rasterScatterplot(
-      score,
-      Predictions,
-      col= col,
-      cex = .5,
-      xlab= "Observed",
-      ylab= "Predicted",
-      main= paste0(tissue, "\n(n= ", Ntot, ")")
-    )
+    vlite::rasterScatterplot(score,
+                             Predictions,
+                             col= col,
+                             cex = .5,
+                             xlab= "Observed",
+                             ylab= "Predicted",
+                             main= tissue)
     
   }]
   

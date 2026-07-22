@@ -12,7 +12,7 @@ coor <- c(
   "chr18:67,440,557-67,458,528", # globally open
   "chr18:65,797,620-65,803,440" # globally open
 )
-bed <- importBed(coor[c(7, 3, 1, 6)])
+bed <- importBed(coor[c(7, 1, 6, 3)])
 
 # Import PCC ----
 PCC <- readRDS("db/PCC/obs_vs_pred_per_tissue_chr18_peaks_union.rds")
@@ -24,19 +24,38 @@ pdf("pdf/0_paper/screenshot_example_accessibility_models.pdf", width = 6, height
 vl_par(mai= c(.9, 2, .9, .4))
 vlite::bwScreenshot(
   bed = bed,
-  tracks= c("db/bw/observed/midbrain_treat_pileup.bigwig",
-            "db/bw/predicted/midbrain_predicted_accessibility_chr18.bw",
-            "db/bw/observed/heart_treat_pileup.bigwig",
+  tracks= c("db/bw/observed/heart_treat_pileup.bigwig",
             "db/bw/predicted/heart_predicted_accessibility_chr18.bw",
             "db/bw/observed/limb_treat_pileup.bigwig",
-            "db/bw/predicted/limb_predicted_accessibility_chr18.bw"),
-  track.names = c(paste("PCC=", PCC["Midbrain", PCC], "| Midbrain obs."),
-                  "Midbrain pred.",
-                  paste("PCC=", PCC["Heart", PCC], "| Heart obs."),
+            "db/bw/predicted/limb_predicted_accessibility_chr18.bw",
+            "db/bw/observed/midbrain_treat_pileup.bigwig",
+            "db/bw/predicted/midbrain_predicted_accessibility_chr18.bw"),
+  track.names = c(paste("PCC=", PCC["Heart", PCC], "| Heart obs."),
                   "Heart pred.",
                   paste("PCC=", PCC["Limb", PCC], "| Limb obs."),
-                  "Limb pred."),
+                  "Limb pred.",
+                  paste("PCC=", PCC["Midbrain", PCC], "| Midbrain obs."),
+                  "Midbrain pred."),
   col= c("black", "grey"),
-  bw.max = c(280, 150, 130, 50, 90, 50)
+  genome = "mm10",
+  bw.max = c(130, 50, 90, 50, 280, 150)
+)
+vlite::bwScreenshot(
+  bed = resizeBed(bed, "region", 1e4, 1e4),
+  tracks= c("db/bw/observed/heart_treat_pileup.bigwig",
+            "db/bw/predicted/heart_predicted_accessibility_chr18.bw",
+            "db/bw/observed/limb_treat_pileup.bigwig",
+            "db/bw/predicted/limb_predicted_accessibility_chr18.bw",
+            "db/bw/observed/midbrain_treat_pileup.bigwig",
+            "db/bw/predicted/midbrain_predicted_accessibility_chr18.bw"),
+  track.names = c(paste("PCC=", PCC["Heart", PCC], "| Heart obs."),
+                  "Heart pred.",
+                  paste("PCC=", PCC["Limb", PCC], "| Limb obs."),
+                  "Limb pred.",
+                  paste("PCC=", PCC["Midbrain", PCC], "| Midbrain obs."),
+                  "Midbrain pred."),
+  col= c("black", "grey"),
+  genome = "mm10",
+  bw.max = c(130, 50, 90, 50, 280, 150)
 )
 dev.off()

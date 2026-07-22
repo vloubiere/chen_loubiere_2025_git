@@ -1,5 +1,6 @@
 setwd("/groups/stark/vloubiere/projects/DeepATAC_shenzhi/")
-devtools::load_all("/groups/stark/vloubiere/vlite/")
+# devtools::load_all("/groups/stark/vloubiere/vlite/")
+devtools::load_all("/groups/stark/vloubiere/vlite-dev/")
 
 # Import metadata ----
 meta <- readRDS("Rdata/paper_metadata_v3.rds")
@@ -7,8 +8,8 @@ meta <- meta[dataset=="activity" & ID=="model1_bulkATAC_tsx3Aug_2xBal_noW" & tis
 meta <- meta[set %in% c("test", "random", "NegGenomicRegions")]
 
 # Plot ----
-pdf("pdf/0_paper/PPV_per_tissue.pdf", width = 6.25, height = 15)
-vl_par(mfrow= c(6,2))
+# pdf("pdf/0_paper/PPV_per_tissue.pdf", width = 6.25, height = 15)
+# vl_par(mfrow= c(6,2))
 meta[, {
   
   # Import data for each set ----
@@ -69,46 +70,10 @@ meta[, {
       add= T
     )
   }]
-  
-  # Print PPV at cutoff and store predict_cutoff
-  print(paste(tissue, cutoff$PPV_at_cutoff))
-  cutoff <- cutoff$predict_cutoff
-  
-  # Add legend
-  title(main= paste0(tissue, " (", formatC(sum(dat$set=="test"), big.mark = ","), " aug. tiles)"))
-  vista_total <- length(unique(na.omit(dat$enh)))
-  vista_active <- length(unique(na.omit(dat[score==1, enh])))
-  vista_left <- length(unique(na.omit(dat[score==1 & Predictions >= cutoff, enh])))
-  vl_legend(
-    "topleft",
-    legend = c(
-      "Test set:",
-      paste(vista_total, "VISTA tiles"),
-      paste(vista_active, "active enh."),
-      paste(vista_left, "enh. >= cutoff")
-    )
-  )
-  vl_legend(
-    legend= c(
-      "Test set",
-      "+ 300k rdm. seq.",
-      "+ 300k neg. genomic regions"
-    ),
-    lwd= 1,
-    col= adjustcolor(c("black", "red", "blue"), .9)
-  )
-  
-  # Plot enhancer-level PPV
-  enh <- dat[!is.na(enh), .(max.pred= max(Predictions)), .(enh, score)]
-  vl_PPV(
-    enh$max.pred, 
-    enh$score, 
-    plot = T, 
-    col= "black", 
-    main= paste(tissue, "(max pred. / VISTA tile)"),
-    Nleft = 20
-  )
-  
-  print(".")
+   
+  bg <- dat[set=="test", sum(score)/.N]*100
+  print(tissue)
+  print(bg)
+  print(cutoff$PPV_at_cutoff/bg)
 }, tissue]
-dev.off()
+# dev.off()

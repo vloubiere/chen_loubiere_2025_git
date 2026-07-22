@@ -75,6 +75,7 @@ meta[, {
   .c[, col:= adjustcolor(Cc[class], .5)]
   
   # Scatterplot random subset
+  Ntot <- nrow(.c)
   set.seed(1)
   .c[sample(.N, 5000), {
     vlite::rasterScatterplot(
@@ -84,7 +85,7 @@ meta[, {
       cex = .5,
       xlab= "Delta observed",
       ylab= "Delta predicted",
-      main= paste0(tissue, "-", tissue_ctl)
+      main= paste0(tissue, "-", tissue_ctl, "\n(n= ", Ntot, ")")
     )
   }]
   
